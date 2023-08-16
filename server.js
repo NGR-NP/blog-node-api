@@ -4,6 +4,6 @@ import connectTomongodb from "./api/config/mongoDB.js";
 const PORT = 8080;
 
 app.listen(PORT, () => {
-  console.log("server started" + "\n" + "host:  https://localhost:" + PORT);
+  console.log("server started" + "\n" + "host:  http://localhost:" + PORT);
   connectTomongodb();
 });
