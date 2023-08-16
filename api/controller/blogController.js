@@ -33,9 +33,9 @@ export const getAllBlogs = async (req, res) => {
     const allBlogs = await blogModel.find();
     const count = allBlogs.length;
     if (count === 0) {
-      res.status(409).json({ message: "there aren't any blog yet" });
+      res.status(204).json({ message: "no blogs available at the moment" });
     } else {
-      res.status(200).json(count, allBlogs);
+      res.status(200).json({ count, allBlogs });
     }
   } catch (err) {
     res.status(500).json(err);
