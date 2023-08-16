@@ -25,3 +25,19 @@ export const createNewBlog = async (req, res) => {
     });
   }
 };
+
+// get all the blogs
+
+export const getAllBlogs = async (req, res) => {
+  try {
+    const allBlogs = await blogModel.find();
+    const count = allBlogs.length;
+    if (count === 0) {
+      res.status(409).json({ message: "there aren't any blog yet" });
+    } else {
+      res.status(200).json(count, allBlogs);
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
