@@ -1,9 +1,18 @@
 import { Router } from "express";
-import { createNewBlog, getAllBlogs } from "../controller/blogController.js";
+import {
+  createNewBlog,
+  deleteBlogById,
+  getAllBlogs,
+  getBlogById,
+  updateBlogById,
+} from "../controller/blogController.js";
 
 const blogRoutes = Router();
 
-// post methot to create new blog
 blogRoutes.post("/create-blog", createNewBlog);
-blogRoutes.get("/get-all-blogs", getAllBlogs)
+blogRoutes.get("/get-all-blogs", getAllBlogs);
+blogRoutes.get("/get-blog/:id", getBlogById);
+blogRoutes.patch("/update-blog/:id", updateBlogById);
+blogRoutes.delete("/delete-blog/:id", deleteBlogById);
+
 export default blogRoutes;
