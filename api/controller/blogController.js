@@ -1,9 +1,10 @@
+import mongoose from "mongoose";
 import { customError } from "../middleware/customErrorHandler.js";
 import blogModel from "../model/blogModel.js";
 
 // create blog
 export const createNewBlog = async (req, res, next) => {
-  const { title, description, author, image } = req.body;
+  const { title, description, author, image, tags } = req.body;
 
   if (!title || !description || !author) {
     return next(customError(400, "all feild are required!!"));
@@ -14,6 +15,7 @@ export const createNewBlog = async (req, res, next) => {
       description,
       author,
       image,
+      tags,
     });
     await newBlog.save();
     res.status(201).json({ message: "blog created successfully!!", newBlog });
@@ -40,9 +42,13 @@ export const getAllBlogs = async (_req, res, next) => {
 export const getBlogById = async (req, res, next) => {
   const { id } = req.params;
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(customError(400, "not a valid id!!!"));
+  }
+
   try {
-    const blog = await blogModel.findById(id);
-    if (!blog) return res.status(404).json({ message: "blog not found" });
+    const blog = await blogModel.findById(id).populate("tags");
+    if (!blog) return next(customError(404, "blog not found"));
 
     res.status(200).json(blog);
   } catch (err) {
@@ -54,12 +60,16 @@ export const getBlogById = async (req, res, next) => {
 
 export const updateBlogById = async (req, res, next) => {
   const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(customError(400, "not a valid id!!!"));
+  }
   const { title, description, image } = req.body;
 
   try {
     const updateBlog = await blogModel.findById(id);
 
-    if (!updateBlog) res.status(204).json({ message: "blog not found in db" });
+    if (!updateBlog) return next(customError(404, "blog not found in db"));
 
     if (title) {
       updateBlog.title = title;
@@ -85,10 +95,13 @@ export const updateBlogById = async (req, res, next) => {
 export const deleteBlogById = async (req, res, next) => {
   const { id } = req.params;
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(customError(400, "not a valid id!!!"));
+  }
   try {
     const deleteBlog = await blogModel.findByIdAndDelete(id);
 
-    if (!deleteBlog) return res.status(204).json({ message: "blog not found" });
+    if (!deleteBlog) return next(customError(404, "blog not found"));
 
     res.status(200).json({ message: "blog deleted successfully" });
   } catch (err) {
