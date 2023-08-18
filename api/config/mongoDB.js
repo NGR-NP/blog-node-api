@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 
-const connectionString =
-  "mongodb+srv://[username]:[password]@cluster0.9bsqh.mongodb.net/blog";
+const connectionString = process.env.MONGO_URL
 
-  const connectTomongodb = () => {
+const connectTomongodb = () => {
   try {
     mongoose.connect(connectionString);
     console.log("waiting DB connection");
