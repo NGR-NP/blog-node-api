@@ -1,13 +1,12 @@
+import { customError } from "../middleware/customErrorHandler.js";
 import blogModel from "../model/blogModel.js";
 
 // create blog
-export const createNewBlog = async (req, res) => {
+export const createNewBlog = async (req, res, next) => {
   const { title, description, author, image } = req.body;
 
   if (!title || !description || !author) {
-    return res
-      .status(400)
-      .json({ message: "title, description, author is required!!!" });
+    return next(customError(400, "all feild are required!!"));
   }
   try {
     const newBlog = new blogModel({
@@ -19,45 +18,41 @@ export const createNewBlog = async (req, res) => {
     await newBlog.save();
     res.status(201).json({ message: "blog created successfully!!", newBlog });
   } catch (err) {
-    res.status(500).json({
-      message: "something went wrong",
-      error: err,
-    });
+    next(err);
   }
 };
 
 // get all the blogs
 
-export const getAllBlogs = async (_req, res) => {
+export const getAllBlogs = async (_req, res, next) => {
   try {
     const allBlogs = await blogModel.find();
     const count = allBlogs?.length;
-    if (count === 0) {
-      res.status(204).json({ message: "no blogs available at the moment" });
-    } else {
-      res.status(200).json({ count, allBlogs });
-    }
+    if (count === 0)
+      return next(customError(404, "no blogs available at the moment"));
+
+    res.status(200).json({ count, allBlogs });
   } catch (err) {
-    res.status(500).json(err);
+    next(err);
   }
 };
 // get blog by id
-export const getBlogById = async (req, res) => {
+export const getBlogById = async (req, res, next) => {
   const { id } = req.params;
 
   try {
     const blog = await blogModel.findById(id);
-    if (!blog) return res.status(204).json({ message: "blog not found" });
+    if (!blog) return res.status(404).json({ message: "blog not found" });
 
     res.status(200).json(blog);
   } catch (err) {
-    res.status(500).json({ message: "something went wrong", error: err });
+    next(err);
   }
 };
 
 // fing blog by id and update
 
-export const updateBlogById = async (req, res) => {
+export const updateBlogById = async (req, res, next) => {
   const { id } = req.params;
   const { title, description, image } = req.body;
 
@@ -81,13 +76,13 @@ export const updateBlogById = async (req, res) => {
       .status(200)
       .json({ message: "blog update successfully!!", updatedBlog });
   } catch (err) {
-    res.status(500).json({ error: err });
+    next(err);
   }
 };
 
 // delete blog
 
-export const deleteBlogById = async (req, res) => {
+export const deleteBlogById = async (req, res, next) => {
   const { id } = req.params;
 
   try {
@@ -97,6 +92,6 @@ export const deleteBlogById = async (req, res) => {
 
     res.status(200).json({ message: "blog deleted successfully" });
   } catch (err) {
-    res.status(500).json(err);
+    next(err);
   }
 };
