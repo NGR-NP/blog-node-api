@@ -4,11 +4,13 @@ import blogModel from "../model/blogModel.js";
 
 // create blog
 export const createNewBlog = async (req, res, next) => {
-  const { title, description, author, image, tags } = req.body;
+  const { title, description, author, image, tags, categorys } = req.body;
 
-  if (!title || !description || !author) {
-    return next(customError(400, "all feild are required!!"));
-  }
+  if (!title) return next(customError(400, "title is required!!"));
+
+  if (!description) return next(customError(400, "description is required!!"));
+  if (!author) return next(customError(400, "author is required!!"));
+
   try {
     const newBlog = new blogModel({
       title,
@@ -16,6 +18,7 @@ export const createNewBlog = async (req, res, next) => {
       author,
       image,
       tags,
+      categorys,
     });
     await newBlog.save();
     res.status(201).json({ message: "blog created successfully!!", newBlog });
