@@ -1,7 +1,13 @@
 import express from "express";
 import routes from "../routes/routes.js";
 import errorHandler from "../middleware/errorHandlingMiddleWare.js";
+import cors from "cors";
+import "dotenv/config";
+
 const app = express();
+
+// Cross-origin resource sharing
+app.use(cors()); // if you are using Brave browser and  Brave Shields is truned on then we can use fetch in console.log("http://localhost:8080")
 
 // express build-in middleware:
 // Provided by express like
